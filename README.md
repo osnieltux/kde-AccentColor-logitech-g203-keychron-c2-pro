@@ -18,6 +18,12 @@ pamac install libratbag kconfig go dbus
 ## Install/Uninstall systemd service for current user.
 
 ```bash
+# download
+wget https://github.com/osnieltux/kde-AccentColor-logitech-g203/archive/refs/heads/main.zip
+unzip main.zip 
+cd kde-AccentColor-logitech-g203-main
+
+# install or uninstall (systemd userspace)
 bash install.sh
 
 bash uninstall.sh
