@@ -29,6 +29,11 @@ bash install.sh
 bash uninstall.sh
 ```
 
+### Install without compiling with Go, using the binary release.
+```bash
+bash install_prebuild.sh
+```
+
 ## Check
 
 ```bash
