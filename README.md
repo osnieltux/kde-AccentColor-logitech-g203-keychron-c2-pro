@@ -1,4 +1,4 @@
-# kde_color_logitechg203
+# kde AccentColor logitech g203
 
 Set Logitech G203 mouse color to KDE AccentColor
 
