@@ -8,10 +8,9 @@ import (
 	"github.com/godbus/dbus/v5"
 )
 
-
-
 const DEFAULT_COLOR = "0,255,0"
 const FALLBACK_COLOR = "00FF00"
+
 var CURRENT_COLOR = FALLBACK_COLOR
 
 const DEBUG = false
@@ -19,7 +18,7 @@ const DEBUG = false
 var DEVICE_NAME = "hollering-marmot"
 
 func main() {
-	err:= checkDependencies() 
+	err := checkDependencies()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -120,7 +119,7 @@ func checkDependencies() error {
 	_, err := exec.LookPath("kreadconfig6")
 	if err != nil {
 		return fmt.Errorf("Missing dependencies, kreadconfig6 not found in PATH")
-		
+
 	}
 	_, err = exec.LookPath("ratbagctl")
 	if err != nil {
