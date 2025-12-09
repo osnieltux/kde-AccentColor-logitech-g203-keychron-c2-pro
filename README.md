@@ -21,7 +21,7 @@ pamac install libratbag kconfig go dbus
 # download
 wget https://github.com/osnieltux/kde-AccentColor-logitech-g203/archive/refs/heads/main.zip
 unzip main.zip 
-cd kde-AccentColor-logitech-g203-main
+cd de-AccentColor-logitech-g203-keychron-c2-pro-main 
 
 # install or uninstall (systemd userspace)
 bash install.sh
