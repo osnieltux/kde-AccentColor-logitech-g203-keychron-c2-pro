@@ -1,0 +1,14 @@
+sudo groupadd hidusers
+sudo usermod -aG hidusers $USER
+
+sudo nano /etc/udev/rules.d/99-hid-user.rules
+
+# Keychron C2 Pro (teclado)
+ATTRS{idVendor}=="3434", ATTRS{idProduct}=="0526", MODE="0660", GROUP="hidusers"
+
+# Logitech USB Receiver (ratón)
+ATTRS{idVendor}=="046d", ATTRS{idProduct}=="c092", MODE="0660", GROUP="hidusers"
+
+
+sudo udevadm control --reload
+sudo udevadm trigger

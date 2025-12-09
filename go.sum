@@ -1,5 +1,7 @@
 github.com/godbus/dbus/v5 v5.2.0 h1:3WexO+U+yg9T70v9FdHr9kCxYlazaAXUhx2VMkbfax8=
 github.com/godbus/dbus/v5 v5.2.0/go.mod h1:3AAv2+hPq5rdnr5txxxRwiGjPXamgoIHgz9FPBfOp3c=
+github.com/gotmc/libusb/v2 v2.3.4 h1:xDKi52trBIq7QTMxlhHy9zgb+HRmimSBo8yhx+k1NWU=
+github.com/gotmc/libusb/v2 v2.3.4/go.mod h1:rU0mvps+snf/CHvEkISbxrwUlWpt6VluOkjqpKo6TFw=
 github.com/karalabe/hid v1.0.0 h1:+/CIMNXhSU/zIJgnIvBD2nKHxS/bnRHhhs9xBryLpPo=
 github.com/karalabe/hid v1.0.0/go.mod h1:Vr51f8rUOLYrfrWDFlV12GGQgM5AT8sVh+2fY4MPeu8=
 golang.org/x/sys v0.27.0 h1:wBqf8DvsY9Y/2P8gAfPDEYNuS30J4lPHJxXSb/nJZ+s=
