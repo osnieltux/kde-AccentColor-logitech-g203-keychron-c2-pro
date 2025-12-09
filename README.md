@@ -1,6 +1,6 @@
-# kde AccentColor logitech g203
+# kde AccentColor for logitech g203 and keychron c2 pro
 
-Set Logitech G203 mouse color to KDE AccentColor
+Set Logitech G203 mouse and keychron c2 pro color to KDE AccentColor
 
 ## Dependencies
 
