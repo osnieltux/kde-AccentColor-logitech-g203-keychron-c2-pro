@@ -28,9 +28,10 @@ const CHANGE_BRIGHTNESS = false
 const KEYBOARD_RANDOM_BRIGHTNESS = true
 const KEYBOARD_DEFAULT_BRIGHTNESS = 100
 const CHANGE_KEYBOARD_EFFECT = true
-const CHANGE_KEYBOARD_EFFECT_RANDOM = true
-var KEYBOARD_LED_AVAIBLE_EFFECT  = []string{"none", "solid"}
-var KEYBOARD_LED_EFFECT = "none"
+const CHANGE_KEYBOARD_EFFECT_RANDOM = false
+
+var KEYBOARD_LED_AVAILABLE_EFFECT = []string{"none", "solid"}
+var KEYBOARD_LED_EFFECT = "solid"
 
 var CURRENT_COLOR = FALLBACK_COLOR
 
@@ -127,7 +128,7 @@ func onConfigChanged() {
 		// Changing effect
 		if CHANGE_KEYBOARD_EFFECT {
 			if CHANGE_KEYBOARD_EFFECT_RANDOM {
-				KEYBOARD_LED_EFFECT = KEYBOARD_LED_AVAIBLE_EFFECT[rand.Intn(len(KEYBOARD_LED_AVAIBLE_EFFECT))]
+				KEYBOARD_LED_EFFECT = KEYBOARD_LED_AVAILABLE_EFFECT[rand.Intn(len(KEYBOARD_LED_AVAILABLE_EFFECT))]
 			}
 			if err := setKeyboardEffect(KEYBOARD_LED_EFFECT); err != nil {
 				log.Println(err)
@@ -176,12 +177,12 @@ func getAccentColor() (string, error) {
 func checkDependencies() error {
 	_, err := exec.LookPath("kreadconfig6")
 	if err != nil {
-		return fmt.Errorf("Missing dependencies, kreadconfig6 not found in PATH")
+		return fmt.Errorf("missing dependencies, kreadconfig6 not found in PATH")
 
 	}
 	_, err = exec.LookPath("ratbagctl")
 	if err != nil {
-		return fmt.Errorf("Missing dependencies, ratbagctl not found in PATH")
+		return fmt.Errorf("missing dependencies, ratbagctl not found in PATH")
 	}
 	return nil
 }
@@ -243,24 +244,9 @@ func setColor(color string) error {
 		0x00,
 	}
 
-	// string to "\xHH\xHH..."
-	var cmdStr string
-	for _, b := range packet {
-		cmdStr += fmt.Sprintf("\\x%02x", b)
-	}
-
-	cmd := fmt.Sprintf("echo -ne \"%s\" > %v", cmdStr, KEYBOARD_PATH)
-	if DEBUG {
-		log.Println("cmd:", cmd)
-	}
-
-	c := exec.Command("/bin/sh", "-c", cmd)
-	if err := c.Run(); err != nil {
+	err = writeDevicePacket(KEYBOARD_PATH, packet)
+	if err != nil {
 		return err
-	}
-
-	if DEBUG {
-		log.Println("keyboard color changed")
 	}
 
 	return nil
@@ -342,6 +328,7 @@ func PercentToByte(percent int) byte {
 }
 
 func setBrightness(percentToSet int) error {
+	var err error
 	b := byte(percentToSet * 255 / 100)
 	brightness := fmt.Sprintf("0x%02X", b)
 
@@ -359,22 +346,9 @@ func setBrightness(percentToSet int) error {
 		0x00,
 	}
 
-	var cmdStr string
-	for _, b := range packet {
-		cmdStr += fmt.Sprintf("\\x%02x", b)
-	}
-
-	cmd := fmt.Sprintf("echo -ne \"%s\" > %v", cmdStr, KEYBOARD_PATH)
-	if DEBUG {
-		log.Println("cmd set brightness:", cmd)
-	}
-
-	c := exec.Command("/bin/sh", "-c", cmd)
-	if err := c.Run(); err != nil {
+	err = writeDevicePacket(KEYBOARD_PATH, packet)
+	if err != nil {
 		return err
-	}
-	if DEBUG {
-		log.Println("brightness changed")
 	}
 
 	return nil
@@ -392,6 +366,7 @@ func getBrightness() int {
 }
 
 func setKeyboardEffect(effect string) error {
+	var err error
 
 	if DEBUG {
 		log.Println("setKeyboardEffect:", effect)
@@ -417,25 +392,31 @@ func setKeyboardEffect(effect string) error {
 		0x00,
 	}
 
-	var cmdStr string
-	for _, b := range packet {
-		cmdStr += fmt.Sprintf("\\x%02x", b)
-	}
-
-	cmd := fmt.Sprintf("echo -ne \"%s\" > %v", cmdStr, KEYBOARD_PATH)
-	if DEBUG {
-		log.Println("cmd set effect:", cmd)
-	}
-
-	c := exec.Command("/bin/sh", "-c", cmd)
-	if err := c.Run(); err != nil {
+	err = writeDevicePacket(KEYBOARD_PATH, packet)
+	if err != nil {
 		return err
-	}
-	if DEBUG {
-		log.Println("effect changed")
 	}
 
 	return nil
 }
 
 // FIXME: send to dev packet and dev path
+
+func writeDevicePacket(devPath string, packet []byte) error {
+	file, err := os.OpenFile(devPath, os.O_WRONLY, 0600)
+	if err != nil {
+		return fmt.Errorf("error opening %s: %v", packet, err)
+	}
+	defer file.Close()
+
+	n, err := file.Write(packet)
+	if err != nil {
+		return fmt.Errorf("error writing: %v", err)
+	}
+	if DEBUG {
+		log.Printf("Bytes wrote: %d/%d\n", n, len(packet))
+	}
+	
+	return nil
+
+}
