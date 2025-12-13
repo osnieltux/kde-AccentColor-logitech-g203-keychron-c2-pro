@@ -23,9 +23,14 @@ var vendorID = "3434"
 var productID = "0526"
 var productInterface = "1.1"
 
+const CHANGE_KEYBOARD_COLOR = true
+const CHANGE_BRIGHTNESS = false
 const KEYBOARD_RANDOM_BRIGHTNESS = true
 const KEYBOARD_DEFAULT_BRIGHTNESS = 100
-const CHANGE_KEYBOARD_COLOR = true
+const CHANGE_KEYBOARD_EFFECT = true
+const CHANGE_KEYBOARD_EFFECT_RANDOM = true
+var KEYBOARD_LED_AVAIBLE_EFFECT  = []string{"none", "solid"}
+var KEYBOARD_LED_EFFECT = "none"
 
 var CURRENT_COLOR = FALLBACK_COLOR
 
@@ -114,8 +119,19 @@ func onConfigChanged() {
 		}
 
 		// Changing brightness
-		if err := setBrightness(getBrightness()); err != nil {
-			log.Println(err)
+		if CHANGE_BRIGHTNESS {
+			if err := setBrightness(getBrightness()); err != nil {
+				log.Println(err)
+			}
+		}
+		// Changing effect
+		if CHANGE_KEYBOARD_EFFECT {
+			if CHANGE_KEYBOARD_EFFECT_RANDOM {
+				KEYBOARD_LED_EFFECT = KEYBOARD_LED_AVAIBLE_EFFECT[rand.Intn(len(KEYBOARD_LED_AVAIBLE_EFFECT))]
+			}
+			if err := setKeyboardEffect(KEYBOARD_LED_EFFECT); err != nil {
+				log.Println(err)
+			}
 		}
 	}
 
@@ -374,3 +390,52 @@ func getBrightness() int {
 	// generate random value between 1 to 100
 	return min(rand.Intn(100)+1, 100)
 }
+
+func setKeyboardEffect(effect string) error {
+
+	if DEBUG {
+		log.Println("setKeyboardEffect:", effect)
+	}
+	var e byte
+	switch effect {
+	case "none":
+		e = 0x00
+	case "solid":
+		e = 0x01
+	default:
+		e = 0x00
+	}
+
+	packet := []byte{
+		0x07,
+		0x03,
+		0x02, // Set to brightness
+		e,    // effect
+		0x00,
+		0x00,
+		0x00,
+		0x00,
+	}
+
+	var cmdStr string
+	for _, b := range packet {
+		cmdStr += fmt.Sprintf("\\x%02x", b)
+	}
+
+	cmd := fmt.Sprintf("echo -ne \"%s\" > %v", cmdStr, KEYBOARD_PATH)
+	if DEBUG {
+		log.Println("cmd set effect:", cmd)
+	}
+
+	c := exec.Command("/bin/sh", "-c", cmd)
+	if err := c.Run(); err != nil {
+		return err
+	}
+	if DEBUG {
+		log.Println("effect changed")
+	}
+
+	return nil
+}
+
+// FIXME: send to dev packet and dev path
