@@ -29,6 +29,20 @@ bash install.sh
 bash uninstall.sh
 ```
 
+### Udev permisions. Example of Keychron Keychron C2 Pro
+```bash
+lsusb
+Bus 001 Device 003: ID 3434:0526 Keychron Keychron C2 Pro
+
+sudo nano /etc/udev/rules.d/99-keychron.rules
+SUBSYSTEM=="hidraw", ATTRS{idVendor}=="3434", ATTRS{idProduct}=="0526", MODE="0666"
+
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+ls -l /dev/hidraw*
+```
+
+
 ## Check
 
 ```bash
@@ -41,3 +55,8 @@ systemctl --user status kde_color_logitechg203.service
 - Add support for list of devices
 - Indicate LED color per device instead of 0 (current default)
 - use "github.com/gotmc/libusb/v2" instead "libratbag" (i need a lot of time)
+
+### how to capture codes
+```bash
+sudo hexdump -Cv /dev/hidraw4 # use your device
+```
